@@ -1,33 +1,66 @@
-import React, { useEffect, useRef } from 'react'
-import { Route,Routes, useLocation } from 'react-router-dom'
-import DisplayHome from './DisplayHome'
-import DisplayAlbum from './DisplayAlbum'
-import { albumsData } from '../assets/assets'
+// src/App.jsx hoặc nơi bạn đặt router
+import { Routes, Route } from 'react-router-dom';
+import MainLayout from '../layouts/MainLayout';
+import AuthLayout from '../layouts/AuthLayout';
+
+import Login from './Login';
+import Register from './Register';
+import DisplayHome from './DisplayHome';
+import DisplayPlaylist from './DisplayPlaylist';
+import Profile from './Profile';
 
 const Display = () => {
-
-  const displayRef = useRef();
-  const location = useLocation();
-  const isAlbum = location.pathname.includes("album");
-  const albumId = isAlbum ? location.pathname.slice(-1) : "";
-  const bgColor = albumsData[Number(albumId)].bgColor;
-  
-  useEffect(()=>{
-    if (isAlbum) {
-      displayRef.current.style.background = `linear-gradient(${bgColor},#121212)`
-    }else{
-      displayRef.current.style.background = `linear-gradient(${bgColor},#121212)`
-    }
-  })
-
   return (
-    <div ref={displayRef} className='w-[100%] m-2 px-6 pt-4 rounded bg-[#121212] text-white overflow-auto lg:w-[75%] lg:ml-0'>
-        <Routes>
-            <Route path='/' element={<DisplayHome/>}/>
-            <Route path='/album/:id' element={<DisplayAlbum/>}/>
-        </Routes>
-    </div>
-  )
-}
+    <Routes>
+      {/* Auth Layout */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
 
-export default Display
+      {/* Main Layout */}
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<DisplayHome />} />
+        <Route path="/playlist/:name" element={<DisplayPlaylist />} />
+        <Route path="/profile" element={<Profile />} /> {/* Thêm dòng này */}
+        {/* Add other protected/main routes here */}
+      </Route>
+    </Routes>
+  );
+};
+
+export default Display;
+
+
+
+// import React, { useEffect, useRef, useState } from 'react'
+// import { Route, Routes, useLocation, useParams } from 'react-router-dom'
+// import DisplayHome from './DisplayHome'
+// import Login from './Login'
+// import Register from './Register'
+// import DisplayPlaylist from './DisplayPlaylist'
+
+// const Display = () => {
+//   const displayRef = useRef()
+//   const location = useLocation()
+//   const [bgColor, setBgColor] = useState('#333333') // Mặc định
+//   const isAlbum = location.pathname.includes('album')
+//   const albumId = isAlbum ? location.pathname.split('/').pop() : ''
+
+//   useEffect(() => {
+//     displayRef.current.style.background = `linear-gradient(${bgColor}, #121212)`
+//   }, [bgColor])
+
+//   return (
+//     <div ref={displayRef} className='w-[100%] m-2 px-6 pt-4 rounded bg-[#121212] text-white overflow-auto lg:w-[75%] lg:ml-0'>
+//       <Routes>
+//         <Route path='/' element={<DisplayHome />} />
+//         <Route path="/login" element={<Login />} />
+//         <Route path="/register" element={<Register />} />
+//         <Route path='/playlist/:name' element={<DisplayPlaylist />} />
+//       </Routes>
+//     </div>
+//   )
+// }
+
+// export default Display

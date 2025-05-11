@@ -5,3 +5,21 @@
 ::-webkit-scrollbar{
     display: none;
 }
+
+.slick-track {
+  transition: transform 0.5s ease-in-out !important;
+}
+.slick-slide {
+  display: flex;
+  justify-content: center;
+}
+.slick-slide > div {
+  transition: transform 0.3s ease-in-out;
+}
+.slick-slide:hover > div {
+  transform: scale(1.03);
+}
+
+button, img {
+  user-select: none;
+}

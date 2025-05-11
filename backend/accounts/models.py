@@ -9,6 +9,8 @@ class Song(models.Model):
 
     def __str__(self):
         return self.title
+    
+    
 
 class CustomUser(AbstractUser):
     isAdmin = models.BooleanField(default=False)

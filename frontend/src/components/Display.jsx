@@ -1,13 +1,15 @@
 // src/App.jsx hoặc nơi bạn đặt router
-import { Routes, Route } from 'react-router-dom';
-import MainLayout from '../layouts/MainLayout';
-import AuthLayout from '../layouts/AuthLayout';
+import { Routes, Route } from "react-router-dom";
+import MainLayout from "../layouts/MainLayout";
+import AuthLayout from "../layouts/AuthLayout";
 
-import Login from './Login';
-import Register from './Register';
-import DisplayHome from './DisplayHome';
-import DisplayPlaylist from './DisplayPlaylist';
-import Profile from './Profile';
+import Login from "./Login";
+import Register from "./Register";
+import DisplayHome from "./DisplayHome";
+import DisplayPlaylist from "./DisplayPlaylist";
+import Profile from "./Profile";
+import AdminDashboard from "./AdminDashboard";
+import PrivateRoute from "./PrivateRoute";
 
 const Display = () => {
   return (
@@ -21,17 +23,39 @@ const Display = () => {
       {/* Main Layout */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<DisplayHome />} />
-        <Route path="/playlist/:name" element={<DisplayPlaylist />} />
-        <Route path="/profile" element={<Profile />} /> {/* Thêm dòng này */}
+        <Route
+          path="/playlist/:name"
+          element={
+            <PrivateRoute>
+              <DisplayPlaylist />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />{" "}
+        {/* Thêm dòng này */}
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
         {/* Add other protected/main routes here */}
+        <Route path="*" element={<div>Not found</div>} />
       </Route>
     </Routes>
   );
 };
 
 export default Display;
-
-
 
 // import React, { useEffect, useRef, useState } from 'react'
 // import { Route, Routes, useLocation, useParams } from 'react-router-dom'

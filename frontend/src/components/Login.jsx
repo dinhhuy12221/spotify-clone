@@ -37,7 +37,7 @@ export default function Login() {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <img
-            src="https://storage.googleapis.com/pr-newsroom-wp/1/2022/10/Spotify_Logo_CMYK_Green.png"
+            src="https://static.vecteezy.com/system/resources/previews/023/986/935/non_2x/spotify-logo-spotify-logo-transparent-spotify-icon-transparent-free-free-png.png"
             alt="Spotify Logo"
             className="h-12"
           />

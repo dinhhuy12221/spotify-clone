@@ -10,6 +10,7 @@ import DisplayPlaylist from "./DisplayPlaylist";
 import Profile from "./Profile";
 import AdminDashboard from "./AdminDashboard";
 import PrivateRoute from "./PrivateRoute";
+import AdminLayout from "../layouts/AdminLayout";
 
 const Display = () => {
   return (
@@ -40,6 +41,10 @@ const Display = () => {
           }
         />{" "}
         {/* Thêm dòng này */}
+        {/* Add other protected/main routes here */}
+        <Route path="*" element={<div>Not found</div>} />
+      </Route>
+      <Route element={<AdminLayout />}>
         <Route
           path="/admin"
           element={
@@ -48,8 +53,6 @@ const Display = () => {
             </PrivateRoute>
           }
         />
-        {/* Add other protected/main routes here */}
-        <Route path="*" element={<div>Not found</div>} />
       </Route>
     </Routes>
   );

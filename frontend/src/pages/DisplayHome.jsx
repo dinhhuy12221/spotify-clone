@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import MusicSliderSection from "../components/MusicSliderSection";
 import { PlayerContext } from "../context/PlayerContext";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 const DisplayHome = () => {
   const [topView, setTopView] = useState([]);

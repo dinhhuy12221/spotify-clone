@@ -42,7 +42,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="full-screen bg-gray-900 text-white p-6">
       <h1 className="text-4xl font-bold mb-6">Admin Dashboard</h1>
 
       <div className="mb-6">

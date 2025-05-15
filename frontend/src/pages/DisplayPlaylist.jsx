@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import MusicSliderSection from "./MusicSliderSection";
+import MusicSliderSection from "../components/MusicSliderSection";
 import { PlayerContext } from "../context/PlayerContext";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 const DisplayPlaylist = () => {
   const { name } = useParams();

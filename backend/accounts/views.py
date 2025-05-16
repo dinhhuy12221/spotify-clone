@@ -7,6 +7,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, get_user_model
 from django.http import JsonResponse
+from rest_framework.permissions import IsAdminUser
 
 from .models import CustomUser
 from .serializers import RegisterSerializer, LoginSerializer, UserInfoSerializer, PlaylistSerializer
@@ -73,7 +74,6 @@ class UserInfoView(APIView):
             'isAdmin': user.isAdmin,
         }
         return Response(user_info)
-
 
 class UserPlaylistView(APIView):
     permission_classes = [IsAuthenticated]
@@ -184,61 +184,6 @@ class UpdatePlaylistSongsView(APIView):
         user.save()
         return Response({'message': f'Đã {action} bài hát {"vào" if action == "add" else "khỏi"} playlist.'},
                         status=status.HTTP_200_OK)
-
-
-class AdminUserListView(APIView):
-    permission_classes = [IsAuthenticated, IsCustomAdminUser]
-
-    def get(self, request):
-        users = User.objects.all().values('id', 'username', 'email', 'playlists', 'isAdmin')
-        return Response(list(users))
-
-
-class AdminDeleteUserView(APIView):
-    permission_classes = [IsAuthenticated, IsCustomAdminUser]
-
-    def delete(self, request, user_id):
-        try:
-            user = User.objects.get(id=user_id)
-            user.delete()
-            return Response({'message': 'Đã xóa người dùng.'})
-        except User.DoesNotExist:
-            return Response({'error': 'Không tìm thấy người dùng.'}, status=404)
-
-
-class AdminEditUserView(APIView):
-    permission_classes = [IsAuthenticated, IsCustomAdminUser]
-
-    def put(self, request, user_id):
-        data = request.data
-        try:
-            user = User.objects.get(id=user_id)
-            user.username = data.get("username", user.username)
-            user.email = data.get("email", user.email)
-            user.isAdmin = data.get("isAdmin", user.isAdmin)
-            user.save()
-            return Response({'message': 'Đã cập nhật người dùng.'})
-        except User.DoesNotExist:
-            return Response({'error': 'Không tìm thấy người dùng.'}, status=404)
-
-
-class AdminCreateUserView(APIView):
-    permission_classes = [IsAuthenticated, IsCustomAdminUser]
-
-    def post(self, request):
-        username = request.data.get('username')
-        email = request.data.get('email')
-        password = request.data.get('password')
-        isAdmin = request.data.get('isAdmin', False)
-
-        if not username or not password:
-            return Response({'error': 'Username và password là bắt buộc.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if User.objects.filter(username=username).exists():
-            return Response({'error': 'Username đã tồn tại.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = User.objects.create_user(username=username, email=email, password=password, isAdmin=isAdmin)
-        return Response({'message': 'Tạo người dùng thành công.'}, status=status.HTTP_201_CREATED)
 
 
 # from rest_framework.views import APIView

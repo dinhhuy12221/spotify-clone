@@ -23,7 +23,7 @@ export default function Register() {
   };
 
   return (
-    // <div className="min-h-screen flex items-center justify-center bg-black px-4">
+    <div className="w-screen h-screen flex items-center justify-center bg-black px-4">
       <div className="bg-neutral-900 p-8 rounded-2xl shadow-lg w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-6">
@@ -44,7 +44,7 @@ export default function Register() {
         )}
 
         {/* Social Signup Buttons */}
-        <div className="flex flex-col gap-3 mb-6">
+        {/* <div className="flex flex-col gap-3 mb-6">
           <button className="bg-white text-black font-semibold py-2 rounded-lg hover:bg-gray-200 transition">
             Đăng ký bằng Google
           </button>
@@ -54,14 +54,14 @@ export default function Register() {
           <button className="bg-black border border-white text-white font-semibold py-2 rounded-lg hover:bg-neutral-800 transition">
             Đăng ký bằng Apple
           </button>
-        </div>
+        </div> */}
 
         {/* OR divider */}
-        <div className="flex items-center gap-2 mb-6">
+        {/* <div className="flex items-center gap-2 mb-6">
           <hr className="flex-grow border-neutral-700" />
           <span className="text-neutral-500">HOẶC</span>
           <hr className="flex-grow border-neutral-700" />
-        </div>
+        </div> */}
 
         {/* Email Signup */}
         <form onSubmit={handleRegister} className="flex flex-col gap-4">
@@ -110,7 +110,7 @@ export default function Register() {
           </div>
         </p>
       </div>
-    // </div>
+    </div>
   );
 }
 

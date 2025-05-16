@@ -13,8 +13,6 @@ class Song(models.Model):
     
 
 class CustomUser(AbstractUser):
-    isAdmin = models.BooleanField(default=False)
-
     # Playlist: [{"name": "Tên A", "song_ids": [1, 2]}, {"name": "Tên B", "song_ids": [3]}]
     playlists = JSONField(default=list, blank=True)
 

@@ -9,7 +9,7 @@ const useAuth = () => {
 const PublicRoute = () => {
   const isAuth = useAuth()
   // Nếu đã login rồi, redirect thẳng vào dashboard
-  return isAuth ? <Navigate to="/admin/dashboard" replace /> : <Outlet />
+  return <Outlet />
 }
 
 export default PublicRoute

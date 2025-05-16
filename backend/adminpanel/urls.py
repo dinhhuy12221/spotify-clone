@@ -1,8 +1,27 @@
-from django.urls import path
-from .views import AdminUserView, MyTokenObtainPairView
+# music/urls.py
+
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+from .views import (
+    AdminTokenView,
+    TestAuthView,
+    AdminUserView,
+    AlbumViewSet,
+    SongViewSet,
+    MusicVideoViewSet,
+)
+
+router = DefaultRouter()
+router.register(r'albums', AlbumViewSet, basename='album')
+router.register(r'songs',  SongViewSet,  basename='song')
+router.register(r'videos', MusicVideoViewSet, basename='video')
 
 urlpatterns = [
-    path('login/', MyTokenObtainPairView.as_view(), name='admin_login'),
+    path('login/', AdminTokenView.as_view(), name='admin_login'),
+    path('test-auth/', TestAuthView.as_view(), name='test-auth'),
     path('users/', AdminUserView.as_view()),
     path('users/<int:user_id>/', AdminUserView.as_view()),
+     # Media CRUD + download
+    path('', include(router.urls)),
 ]

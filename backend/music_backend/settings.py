@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,9 @@ SECRET_KEY = 'django-insecure--^0f8$l3u0fgh)d%55=t3brpz$r&-p$5%&k=g2a$8ausm_**u(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+# ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]  # Dùng để test, không dùng khi deploy thật
+
 
 
 # Application definition
@@ -40,14 +43,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'accounts',
     'adminpanel',
-    'music',
+    'song.apps.SongConfig',
+    'album.apps.AlbumConfig',
+    'music_video.apps.MusicVideoConfig',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    # 'accounts.middlewares.JsonExceptionMiddleware', 
+    # 'accounts.middlewares.JsonExceptionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -123,6 +129,17 @@ REST_FRAMEWORK = {
 }
 
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_BLACKLIST_ENABLED': True,
+}
+
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -155,10 +172,12 @@ CORS_ALLOW_CREDENTIALS = True
 #     "http://127.0.0.1:5173"
 # ]
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https?://localhost(:\d+)?$",
-    r"^https?://127\.0\.0\.1(:\d+)?$",
-]
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https?://localhost(:\d+)?$",
+#     r"^https?://127\.0\.0\.1(:\d+)?$",
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_METHODS = [
     'OPTIONS',
@@ -166,6 +185,7 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
     'DELETE',
+    'PATCH',
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -187,23 +207,6 @@ CORS_EXPOSE_HEADERS = [
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-
-# # settings.py
-
-# # Đảm bảo sử dụng HTTPS
-# SECURE_SSL_REDIRECT = True  # Đảm bảo chuyển hướng sang HTTPS nếu không sử dụng
-
-# # Các cookie chỉ sử dụng qua HTTPS
-# SECURE_COOKIE = True
-
-# # Bảo mật cookie
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-
-# # Cấu hình SameSite để bảo vệ chống CSRF
-# SESSION_COOKIE_SAMESITE = 'Strict'
-# CSRF_COOKIE_SAMESITE = 'Strict'
-
-# # Đảm bảo chỉ gửi cookie qua HTTPS và HTTPOnly
-# SESSION_COOKIE_HTTPONLY = True
-# CSRF_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_SAMESITE = 'None'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

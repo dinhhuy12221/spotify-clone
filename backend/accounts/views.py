@@ -1,67 +1,116 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from rest_framework.exceptions import ValidationError, AuthenticationFailed
-from rest_framework.permissions import IsAuthenticated, BasePermission
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, get_user_model
-from django.http import JsonResponse
-from rest_framework.permissions import IsAdminUser
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from .models import CustomUser
 from .serializers import RegisterSerializer, LoginSerializer, UserInfoSerializer, PlaylistSerializer
 
-import datetime
 
 User = get_user_model()
 
-# Custom permission for admin
-class IsCustomAdminUser(BasePermission):
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.isAdmin)
 
+# Hàm tạo JWT từ người dùng
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 class RegisterView(APIView):
-    permission_classes = [permissions.AllowAny]
-
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({'message': 'Đăng ký thành công!', 'token': token.key}, status=status.HTTP_201_CREATED)
+            tokens = get_tokens_for_user(user)
+            return Response({'user': serializer.data, 'tokens': tokens}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class RegisterView(APIView):
+#     permission_classes = [permissions.AllowAny]
+
+#     def post(self, request):
+#         serializer = RegisterSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = serializer.save()
+#             token, _ = Token.objects.get_or_create(user=user)
+#             return Response({'message': 'Đăng ký thành công!', 'token': token.key}, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
-    permission_classes = [permissions.AllowAny]
-
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = authenticate(**serializer.validated_data)
-            if user:
-                token, _ = Token.objects.get_or_create(user=user)
-                response = Response({
-                    'message': 'Đăng nhập thành công!',
-                    'token': token.key,
-                    'user': {
-                        'username': user.username,
-                        'email': user.email,
-                        'playlists': user.playlists,
-                        'isAdmin': user.isAdmin,
-                    }
-                })
-
-                expires = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-                response.set_cookie('token', token.key, expires=expires, httponly=False, secure=False, samesite='Lax')
-                return response
-
-            return Response({'error': 'Tài khoản hoặc mật khẩu không chính xác'}, status=status.HTTP_400_BAD_REQUEST)
+            user = authenticate(
+                username=serializer.validated_data['username'],
+                password=serializer.validated_data['password']
+            )
+            if user is not None:
+                tokens = get_tokens_for_user(user)
+                return Response({'tokens': tokens}, status=status.HTTP_200_OK)
+            return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class LoginView(APIView):
+#     permission_classes = [permissions.AllowAny]
+
+#     def post(self, request):
+#         serializer = LoginSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = authenticate(**serializer.validated_data)
+#             if user:
+#                 token, _ = Token.objects.get_or_create(user=user)
+#                 response = Response({
+#                     'message': 'Đăng nhập thành công!',
+#                     'token': token.key,
+#                     'user': {
+#                         'username': user.username,
+#                         'email': user.email,
+#                         'playlists': user.playlists,
+#                         'isAdmin': user.isAdmin,
+#                     }
+#                 })
+
+#                 expires = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+#                 response.set_cookie('token', token.key, expires=expires, httponly=False, secure=False, samesite='Lax')
+#                 return response
+
+#             return Response({'error': 'Tài khoản hoặc mật khẩu không chính xác'}, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        """
+        Blacklist the provided refresh token
+        """
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response({'detail': 'Refresh token required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({'detail': 'Logout successful'}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'detail': 'Invalid or expired token'}, status=status.HTTP_400_BAD_REQUEST)
+
+class TestAuthView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        return Response({'detail': 'Token is valid'}, status=status.HTTP_200_OK)
+
+# Chú ý: bạn có thể dùng sẵn TokenRefreshView cho refresh
+class MyTokenRefreshView(TokenRefreshView):
+    permission_classes = [AllowAny]
+    
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
 

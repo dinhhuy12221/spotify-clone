@@ -1,9 +1,15 @@
 from django.urls import path
 from . import views
-
+from .views import (
+    RegisterView, LoginView, LogoutView,
+    TestAuthView, MyTokenRefreshView
+)
 urlpatterns = [
-    path('register/', views.RegisterView.as_view(), name='register'),
-    path('login/', views.LoginView.as_view(), name='login'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('token/refresh/', MyTokenRefreshView.as_view(), name='token_refresh'),
+    path('logout/', LogoutView.as_view(), name='auth_logout'),
+    path('test-auth/', TestAuthView.as_view(), name='test_auth'),
     path('user_info/', views.UserInfoView.as_view(), name='user_info'),
     path('user-playlist/', views.UserPlaylistView.as_view(), name='user_playlist'),
     path('playlist/create/', views.CreatePlaylistView.as_view(), name='create-playlist'),

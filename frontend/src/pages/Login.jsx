@@ -1,6 +1,6 @@
 // src/pages/Login.jsx
 import { useState } from "react";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
@@ -14,26 +14,41 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/accounts/login/", formData);
-      const token = res.data.token;
-      const { username, email, playlists } = res.data.user;
+      const res = await axios.post("accounts/login/", formData);
 
-      localStorage.setItem("token", token);
-      localStorage.setItem(
-        "user_info",
-        JSON.stringify({ username, email, playlists })
-      );
+      // axios không có response.ok, nên không check như fetch
+      // nếu lỗi sẽ bị ném ở catch
 
-      navigate("/");
+      const data = response.data;
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
+
+      // Chuyển đến dashboard hoặc trang admin
+      window.location.href = "/";
     } catch (err) {
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại.");
-      console.log(err);
+      // err.response.data.detail có thể có message lỗi
+      setError("Đăng nhập thất bại");
     }
+
+    //   const token = res.data.token;
+    //   const { username, email, playlists } = res.data.user;
+
+    //   localStorage.setItem("token", token);
+    //   localStorage.setItem(
+    //     "user_info",
+    //     JSON.stringify({ username, email, playlists })
+    //   );
+
+    //   navigate("/");
+    // } catch (err) {
+    //   setError("Đăng nhập thất bại. Vui lòng kiểm tra lại.");
+    //   console.log(err);
+    // }
   };
 
   return (
-    // <div className="min-h-screen flex items-center justify-center bg-black px-4">
-      <div className="bg-neutral-900 p-8 rounded-2xl shadow-lg w-full max-w-md">
+    <div className="w-screen h-screen flex items-center justify-center bg-black px-4">
+      <div className="bg-neutral-900 p-8 rounded-2xl shadow-lg w-full max-w-md max-h-min">
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <img
@@ -43,24 +58,24 @@ export default function Login() {
           />
         </div>
 
-        <h1 className="text-3xl font-bold text-white mb-6 text-center">Đăng nhập vào Spotify</h1>
+        <h1 className="text-3xl font-bold text-white mb-6 text-center">
+          Đăng nhập vào Spotify
+        </h1>
 
-        {error && (
-          <p className="text-red-500 text-center mb-4">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         {/* Social Login Buttons */}
-        <div className="flex flex-col gap-3 mb-6">
-          <button className="bg-white text-black font-semibold py-2 rounded-lg hover:bg-gray-200 transition">
-            Đăng nhập bằng Google
-          </button>
-          <button className="bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-500 transition">
-            Đăng nhập bằng Facebook
-          </button>
-          <button className="bg-black border border-white text-white font-semibold py-2 rounded-lg hover:bg-neutral-800 transition">
-            Đăng nhập bằng Apple
-          </button>
-        </div>
+        {/* <div className="flex flex-col gap-3 mb-6">
+        <button className="bg-white text-black font-semibold py-2 rounded-lg hover:bg-gray-200 transition">
+          Đăng nhập bằng Google
+        </button>
+        <button className="bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-500 transition">
+          Đăng nhập bằng Facebook
+        </button>
+        <button className="bg-black border border-white text-white font-semibold py-2 rounded-lg hover:bg-neutral-800 transition">
+          Đăng nhập bằng Apple
+        </button>
+      </div> */}
 
         {/* OR divider */}
         <div className="flex items-center gap-2 mb-6">
@@ -104,18 +119,15 @@ export default function Login() {
             Đăng ký ngay
           </Link>
         </p>
-          <div className="flex justify-center mt-2">
-            <Link to="/" className="text-green-500 hover:underline">
-              Return Home
-            </Link>
-          </div>
+        <div className="flex justify-center mt-2">
+          <Link to="/" className="text-green-500 hover:underline">
+            Return Home
+          </Link>
+        </div>
       </div>
-    // </div>
+    </div>
   );
 }
-
-
-
 
 // import React, { useState } from "react";
 // import axios from "axios";
@@ -228,8 +240,6 @@ export default function Login() {
 
 // export default Login;
 
-
-
 // // src/pages/Login.jsx
 // import React, { useState } from "react";
 // import axios from "axios";
@@ -253,7 +263,7 @@ export default function Login() {
 //   const [showPassword, setShowPassword] = useState(false);
 //   const [error, setError] = useState("");
 
-//   const handleChange = (e) =>   
+//   const handleChange = (e) =>
 //     setFormData({ ...formData, [e.target.name]: e.target.value });
 
 //   const handleLogin = async (e) => {

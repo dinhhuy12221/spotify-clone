@@ -38,7 +38,7 @@ const Navbar = () => {
               onClick={() => setDropdownOpen((prev) => !prev)}
               className="bg-purple-500 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold"
             >
-              {user?.username}
+              {user?.username[0]}
             </button>
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-32 bg-white rounded shadow-lg z-10 text-sm text-black">

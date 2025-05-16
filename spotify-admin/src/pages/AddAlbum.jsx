@@ -1,83 +1,138 @@
-import React, { useState } from 'react'
-import { assets } from '../assets/assets'
-import axios from 'axios';
-import { url } from '../App';
-import { toast } from 'react-toastify';
+import { useState } from "react";
+import { assets } from "../assets/assets";
+import axios from "../utils/axiosConfig";
+import { toast } from "react-toastify";
 
 const AddAlbum = () => {
+  const [coverImage, setCoverImage] = useState(false);
+  //   const [colour, setcolour] = useState("#121212");
+  const [title, setTitle] = useState("");
+  const [artist, setArtist] = useState("");
+  const [releaseDate, setReleaseDate] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    const [image,setImage] = useState(false);
-    const [colour,setcolour] = useState("#121212");
-    const [name,setName] = useState("");
-    const [desc,setDesc] = useState("");
-    const [loading,setLoading] = useState(false);
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-    const onSubmitHandler = async (e) => {
+    try {
+      const formData = new FormData();
+      if (coverImage instanceof File) {
+        formData.append("cover_image", coverImage);
+      } else {
+        console.error("Cover image is not a valid file.");
+      }
+      console.log("Sending:", {
+        title,
+        artist,
+        releaseDate,
+        coverImage,
+      });
 
-        e.preventDefault();
-        setLoading(true);
+      formData.append("title", title);
+      formData.append("artist", artist);
+      formData.append("cover_image", coverImage);
+      formData.append("release_date", releaseDate);
 
-        try {
-            
-            const formData = new FormData();
-
-            formData.append('name',name);
-            formData.append('desc',desc);
-            formData.append('image',image);
-            formData.append('bgcolor',colour);
-
-            const response = await axios.post(`${url}/api/album/add`,formData);
-
-            if(response.data.success) {
-                toast.success("Album added");
-                setDesc("");
-                setImage(false);
-                setName("");
-            }
-            else{
-                toast.error("Something went wrong");
-            }
-
-        } catch (error) {
-            toast.error("Error occur");
-        }
-
-        setLoading(false);
+      const response = await axios.post(`/admin/albums/`, formData);
+      console.log(response);
+      
+      if (response) {
+        toast.success("Album added");
+        setArtist("");
+        setCoverImage(null);
+        setTitle("");
+        setReleaseDate(null);
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Error occur");
+      console.error(error);
     }
 
-    return loading ? (
-        <div className='grid place-items-center min-h-[80vh]'>
-            <div className='w-16 h-16 place-self-center border-4 border-gray-400 border-t-green-800 rounded-full animate-spin'></div>
-        </div>
-      ) : (
-    <form onSubmit={onSubmitHandler} className='flex flex-col items-start gap-8 text-gray-600'>
-        <div className='flex flex-col gap-4'>
-            <p>Upload Image</p>
-            <input onChange={(e)=>setImage(e.target.files[0])} type="file" id='image' accept='image/*' hidden/>
-            <label htmlFor="image">
-                <img className='w-24 cursor-pointer' src={image ? URL.createObjectURL(image) : assets.upload_area} alt="" />
-            </label>
-        </div>
+    setLoading(false);
+  };
 
-        <div className='flex flex-col gap-2.5'>
-            <p>Album name</p>
-            <input onChange={(e)=>setName(e.target.value)} value={name} className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' type="text" placeholder='Type here' />
-        </div>
+  return loading ? (
+    <div className="grid place-items-center min-h-[80vh]">
+      <div className="w-16 h-16 place-self-center border-4 border-gray-400 border-t-green-800 rounded-full animate-spin"></div>
+    </div>
+  ) : (
+    <form
+      onSubmit={onSubmitHandler}
+      className="flex flex-col items-start gap-8 text-gray-600"
+    >
+      <div className="flex flex-col gap-4">
+        <p>Upload Cover Image</p>
+        <input
+          onChange={(e) => setCoverImage(e.target.files[0])}
+          type="file"
+          id="image"
+          accept="image/*"
+          hidden
+        />
+        <label htmlFor="image">
+          <img
+            className="w-24 cursor-pointer"
+            src={
+              coverImage ? URL.createObjectURL(coverImage) : assets.upload_area
+            }
+            alt=""
+          />
+        </label>
+      </div>
 
-        <div className='flex flex-col gap-2.5'>
-            <p>Album description</p>
-            <input onChange={(e)=>setDesc(e.target.value)} value={desc} className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' type="text" placeholder='Type here' />
-        </div>
+      <div className="flex flex-col gap-2.5">
+        <p>Album title</p>
+        <input
+          onChange={(e) => setTitle(e.target.value)}
+          value={title}
+          className="bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]"
+          type="text"
+          placeholder="Type here"
+        />
+      </div>
 
-        <div className='flex flex-col gap-3'>
+      <div className="flex flex-col gap-2.5">
+        <p>Album artist</p>
+        <input
+          onChange={(e) => setArtist(e.target.value)}
+          value={artist}
+          className="bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]"
+          type="text"
+          placeholder="Type here"
+        />
+      </div>
+
+      <div className="flex flex-col gap-2.5">
+        <p>Album release date</p>
+        <input
+          type="date"
+          onChange={(e) => setReleaseDate(e.target.value)}
+          value={releaseDate ?? ""}
+          max={
+            new Date(Date.now() + 7 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0]
+          } // Ngày tối đa là hôm nay
+          className="bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]"
+        />
+      </div>
+
+      {/* <div className='flex flex-col gap-3'>
             <p>Backround Colour</p>
             <input onChange={(e)=>setcolour(e.target.value)} value={colour} type="color" />
-        </div>
+        </div> */}
 
-        <button className='text-base bg-black text-white py-2.5 px-14 cursor-pointer' type="submit">ADD</button>
-
+      <button
+        className="text-base bg-black text-white py-2.5 px-14 cursor-pointer"
+        type="submit"
+      >
+        ADD
+      </button>
     </form>
-  )
-}
+  );
+};
 
-export default AddAlbum
+export default AddAlbum;

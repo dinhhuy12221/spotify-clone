@@ -21,9 +21,10 @@ function AdminLogin() {
 
       const data = response.data;
       localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
 
       // Chuyển đến dashboard hoặc trang admin
-      window.location.href = "/admin/dashboard";
+      window.location.href = "/list-user";
     } catch (err) {
       // err.response.data.detail có thể có message lỗi
       setError("Đăng nhập thất bại");

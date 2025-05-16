@@ -4,7 +4,7 @@ import axios from "../utils/axiosConfig";
 import { toast } from "react-toastify";
 
 const AddAlbum = () => {
-  const [coverImage, setCoverImage] = useState(false);
+  const [coverImage, setCoverImage] = useState(null);
   //   const [colour, setcolour] = useState("#121212");
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");

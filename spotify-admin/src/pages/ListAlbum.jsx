@@ -66,7 +66,7 @@ const ListAlbum = () => {
               />
               <p>{item.title}</p>
               <p>{item.artist}</p>
-              <p>{item.songs}</p>
+              <p>{item?.songs ?? ""}</p>
               <p>{item.release_date}</p>
               <div className="flex gap-2">
                 <EditIcon

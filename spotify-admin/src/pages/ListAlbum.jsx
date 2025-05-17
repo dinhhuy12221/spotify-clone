@@ -39,7 +39,6 @@ const ListAlbum = () => {
         allSongs.push(songsWithAlbum);
       }
 
-      console.log(allSongs);
       
 
       setSongFromAlbum(allSongs);
@@ -128,7 +127,7 @@ const ListAlbum = () => {
                       setAlbum(item);
                     }}
                   >
-                    Manage Songs
+                    List Songs
                   </button>
                 </div>
                 {new Date(item.release_date).toLocaleString("vi-VN", {
@@ -166,11 +165,6 @@ const ListAlbum = () => {
         <InputModal
           title="Edit album"
           inputs={[
-            // {
-            //   name: "username",
-            //   label: "Username",
-            //   defaultValue: editUserData.username,
-            // },
             {
               name: "cover_image",
               label: "Cover Image",

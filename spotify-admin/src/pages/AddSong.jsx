@@ -20,36 +20,36 @@ const AddSong = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const formData = new FormData();
-    //   console.log("Sending:", {
-    //     title,
-    //     artist,
-    //     album,
-    //     coverImage,
-    //     song,
-    //   });
-      console.log(album);
-      
-      formData.append("title", title);
-      formData.append("artist", artist);
-      formData.append("album", album);
-      formData.append("audio_file", song);
-      formData.append("cover_image", coverImage);
+      const requiredFields = { title, artist, coverImage, album, song };
+      const emptyField = Object.entries(requiredFields).find(([key, value]) => !value);
 
-      // Gửi yêu cầu POST đến server
-      const response = await axios.post(`/admin/songs/`, formData);
-
-      // Kiểm tra phản hồi từ server
-      if (response) {
-        toast.success("Song added");
-        setTitle("");
-        setArtist("");
-        setAlbumData("");
-        // setAudioFile(null);
-        setCoverImage(null);
-        setSong(false);
-      } else {
-        toast.error("Something went wrong");
+      if (emptyField) {
+        toast.error(`Field "${emptyField[0]}" is required.`);
+      }
+      else {
+        const formData = new FormData();
+        
+        formData.append("title", title);
+        formData.append("artist", artist);
+        formData.append("album", album);
+        formData.append("audio_file", song);
+        formData.append("cover_image", coverImage);
+  
+        // Gửi yêu cầu POST đến server
+        const response = await axios.post(`/admin/songs/`, formData);
+  
+        // Kiểm tra phản hồi từ server
+        if (response) {
+          toast.success("Song added");
+          setTitle("");
+          setArtist("");
+          setAlbumData("");
+          // setAudioFile(null);
+          setCoverImage(null);
+          setSong(false);
+        } else {
+          toast.error("Something went wrong");
+        }
       }
     } catch (error) {
       toast.error("Error occured");
@@ -159,8 +159,8 @@ const AddSong = () => {
           defaultValue={album}
           className="bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[150px]"
         >
-          <option value="none">None</option>
-          {albumData?.map((item, index) => (
+          <option value="">None</option>
+          {albumData && albumData?.map((item, index) => (
             <option key={index} value={item?.id}>
               {item?.title}
             </option>

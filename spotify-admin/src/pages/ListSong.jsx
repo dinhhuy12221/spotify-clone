@@ -91,9 +91,10 @@ const ListSong = () => {
               <a
                 href={item.audio_file}
                 download
+                target="_blank"
                 className="text-blue-500 underline"
               >
-                Tải về
+                Download
               </a>
               <p>
                 {new Date(item.created_at).toLocaleString("vi-VN", {

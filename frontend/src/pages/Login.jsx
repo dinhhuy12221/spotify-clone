@@ -14,12 +14,12 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("accounts/login/", formData);
+      const res = await axios.post("/accounts/login/", formData);
 
       // axios không có response.ok, nên không check như fetch
       // nếu lỗi sẽ bị ném ở catch
 
-      const data = response.data;
+      const data = res.data;
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
 
@@ -28,6 +28,8 @@ export default function Login() {
     } catch (err) {
       // err.response.data.detail có thể có message lỗi
       setError("Đăng nhập thất bại");
+      console.error(err);
+      
     }
 
     //   const token = res.data.token;

@@ -23,7 +23,7 @@ const SongListPopup = ({ songs, onAddSong, onClose, onDeleteSong }) => {
                   rel="noopener noreferrer"
                   className="text-blue-500 underline"
                 >
-                  Nghe nhạc
+                  Download
                 </a>
               </div>
             </div>

@@ -16,35 +16,37 @@ const AddAlbum = () => {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      if (coverImage instanceof File) {
-        formData.append("cover_image", coverImage);
-      } else {
-        console.error("Cover image is not a valid file.");
-      }
-      console.log("Sending:", {
-        title,
-        artist,
-        releaseDate,
-        coverImage,
-      });
-
-      formData.append("title", title);
-      formData.append("artist", artist);
-      formData.append("cover_image", coverImage);
-      formData.append("release_date", releaseDate);
-
-      const response = await axios.post(`/admin/albums/`, formData);
-      console.log(response);
       
-      if (response) {
-        toast.success("Album added");
-        setArtist("");
-        setCoverImage(null);
-        setTitle("");
-        setReleaseDate(null);
-      } else {
-        toast.error("Something went wrong");
+      const requiredFields = { title, artist, coverImage, releaseDate };
+      const emptyField = Object.entries(requiredFields).find(([key, value]) => !value);
+      
+      if (emptyField) {
+        toast.error(`Field "${emptyField[0]}" is required.`);
+      }
+      else {
+        const formData = new FormData();
+        if (coverImage instanceof File) {
+          formData.append("cover_image", coverImage);
+        } else {
+          console.error("Cover image is not a valid file.");
+        }
+        formData.append("title", title);
+        formData.append("artist", artist);
+        formData.append("cover_image", coverImage);
+        formData.append("release_date", releaseDate);
+  
+        const response = await axios.post(`/admin/albums/`, formData);
+        
+        if (response) {
+          toast.success("Album added");
+          setArtist("");
+          setCoverImage(null);
+          setTitle("");
+          setReleaseDate(null);
+        } else {
+          toast.error("Something went wrong");
+        }
+
       }
     } catch (error) {
       toast.error("Error occur");

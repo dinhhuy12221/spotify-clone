@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import Playlist from "./Playlist";
+import axios from "../utils/axiosConfig";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -11,10 +12,10 @@ const Sidebar = () => {
   const handleSearch = async () => {
     if (!query.trim()) return;
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/music/search/?q=${encodeURIComponent(query)}`
+      const response = await axios.get(
+        `/songs/?search=${query}`
       );
-      const data = await response.json();
+      const data = await response.data;
       navigate("/", { state: { searchResults: data } });
     } catch (error) {
       console.error("Search failed:", error);

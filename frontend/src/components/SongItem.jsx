@@ -1,35 +1,51 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation from React Router
+import { useLocation } from "react-router-dom";
 import { PlayerContext } from "../context/PlayerContext";
 import defaultImage from "../assets/default.png";
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd"; // MUI icon
-import CloseIcon from "@mui/icons-material/Close"; // For closing popup
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import CloseIcon from "@mui/icons-material/Close";
+import axios from "../utils/axiosConfig";
 
 const SongItem = ({ song, onPlay, onRemoved }) => {
   const { playWithId } = useContext(PlayerContext);
   const [imgSrc, setImgSrc] = useState(song?.cover_image || defaultImage);
-  const [showPopup, setShowPopup] = useState(false); // Popup for adding to playlist
-  const [showRemoveModal, setShowRemoveModal] = useState(false); // Modal for confirming removal
+  const [showPopup, setShowPopup] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [userPlaylists, setUserPlaylists] = useState([]);
   const [songInPlaylists, setSongInPlaylists] = useState([]);
 
-  const location = useLocation(); // Get the current location from React Router
-  const popupRef = useRef(null); // Reference to the popup div
+  const location = useLocation();
+  const popupRef = useRef(null);
 
-  // useEffect(() => {
-  //   // Lấy danh sách playlist từ localStorage
-  //   const userInfo = JSON.parse(localStorage.getItem("user_info"));
-  //   setUserPlaylists(userInfo?.playlists || []);
+  const isPlaylistPage = location.pathname.startsWith("/playlist/");
 
-  //   // Kiểm tra song_id có tồn tại trong các playlist không
-  //   const playlistsWithSong = userInfo?.playlists.filter((playlist) =>
-  //     playlist.song_ids.includes(song?.id)
-  //   );
-  //   setSongInPlaylists(playlistsWithSong || []);
-  // }, [song]);
+  // Lấy danh sách playlist của user và kiểm tra bài hát thuộc playlist nào
+  const fetchPlaylists = async () => {
+    try {
+      const res = await axios("/accounts/playlists/");
+      const data = res.data;
+      setUserPlaylists(data || []);
+
+      const playlistsWithSong = data.filter((p) =>
+        p.songs.some((s) => s === song?.id)
+      );
+
+      setSongInPlaylists(playlistsWithSong);
+    } catch (err) {
+      console.error("Error fetching playlists", err);
+    }
+  };
 
   useEffect(() => {
-    // Thêm sự kiện khi click ngoài popup để đóng popup
+    fetchPlaylists();
+  }, []);
+
+  useEffect(() => {
+    fetchPlaylists();
+  }, [song]);
+
+  // Click ngoài popup để đóng
+  useEffect(() => {
     const handleClickOutside = (e) => {
       if (popupRef.current && !popupRef.current.contains(e.target)) {
         setShowPopup(false);
@@ -49,85 +65,78 @@ const SongItem = ({ song, onPlay, onRemoved }) => {
   };
 
   const handleAddToPlaylist = (e) => {
-    e.stopPropagation(); // Tránh trigger play khi click icon
+    e.stopPropagation();
     setShowPopup(true);
   };
 
-  const handleSelectPlaylist = async (playlistName) => {
-    // Thêm song vào playlist
-    const token = localStorage.getItem("token");
-    const playlist = userPlaylists.find((p) => p.name === playlistName);
 
-    const res = await fetch(
-      "http://localhost:8000/api/accounts/playlist/update-songs/",
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Token ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          playlist_name: playlist?.name,
-          action: "add",
-          song_id: song?.id,
-        }),
-      }
+  const handleSelectPlaylist = async (playlist) => {
+  if (!playlist || !song || !song.id) return;
+
+  const playlistTemplate = userPlaylists.find((p) => p.id === playlist.id);
+  if (!playlistTemplate) return;
+
+  // Chuyển tất cả phần tử thành ID
+  const currentSongIds = (playlistTemplate.songs || []).map((s) =>
+    typeof s === "object" && s !== null ? s.id : s
+  );
+
+  // Nếu đã tồn tại thì không thêm
+  if (currentSongIds.includes(song.id)) {
+    setShowPopup(false);
+    return;
+  }
+
+  const updatedSongs = [...currentSongIds, song.id];
+
+  try {
+    const res = await axios.patch(
+      `/accounts/playlists/${playlistTemplate.id}/`,
+      { songs: updatedSongs }
     );
 
-    if (res.ok) {
-      const updated = await fetch(
-        "http://localhost:8000/api/accounts/user_info/",
-        {
-          headers: { Authorization: `Token ${token}` },
-        }
-      );
-      const data = await updated.json();
-      setUserPlaylists(data.playlists || []);
-      localStorage.setItem("user_info", JSON.stringify(data));
+    if (res.status >= 200 && res.status < 300) {
+      await fetchPlaylists();
     }
+  } catch (err) {
+    console.error("Lỗi khi thêm bài hát vào playlist:", err);
+  } finally {
+    setShowPopup(false);
+  }
+};
 
-    setShowPopup(false); // Đóng popup khi thêm xong
-  };
 
   const handleRemoveFromPlaylist = async () => {
-    // Xóa song khỏi playlist
-    const token = localStorage.getItem("token");
-    const playlist = songInPlaylists[0]; // Sử dụng playlist đang chọn (chỉ có 1 playlist trong songInPlaylists)
+    if (!songInPlaylists?.length) return;
+    const playlist = songInPlaylists[0];
 
-    const res = await fetch(
-      "http://localhost:8000/api/accounts/playlist/update-songs/",
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Token ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          playlist_name: playlist?.name,
-          action: "remove",
-          song_id: song?.id,
-        }),
-      }
+    // Lọc id bài hát ra khỏi mảng songs
+    const updatedSongs = playlist.songs.filter((s) =>
+      // nếu playlist.songs là mảng id, dùng s !== song.id
+      // nếu là mảng object, dùng s.id !== song.id
+      typeof s === "object" ? s.id !== song.id : s !== song.id
     );
 
-    if (res.ok) {
-      const updated = await fetch(
-        "http://localhost:8000/api/accounts/user_info/",
-        {
-          headers: { Authorization: `Token ${token}` },
-        }
-      );
-      const data = await updated.json();
-      setUserPlaylists(data.playlists || []);
-      localStorage.setItem("user_info", JSON.stringify(data));
+    try {
+      // gửi payload đúng format: { songs: [...] }
+      const res = await axios.patch(`/accounts/playlists/${playlist.id}/`, {
+        songs: updatedSongs,
+      });
+
+      if (res.status >= 200 && res.status < 300) {
+        // callback trước khi reload nếu cần
+        onRemoved && onRemoved();
+        // load lại playlists để UI cập nhật
+        await fetchPlaylists();
+      } else {
+        console.error("Update failed:", res.status, res.data);
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa bài hát khỏi playlist:", error);
+    } finally {
+      setShowRemoveModal(false);
     }
-    onRemoved();
-
-    setShowRemoveModal(false); // Đóng modal sau khi xóa
   };
-
-  // Kiểm tra xem URL hiện tại có phải là /playlist/:name không
-  const isPlaylistPage = location.pathname.startsWith("/playlist/");
 
   return (
     <div
@@ -148,15 +157,10 @@ const SongItem = ({ song, onPlay, onRemoved }) => {
         <h3 className="text-sm font-semibold line-clamp-2 text-white">
           {song?.title}
         </h3>
-        {song?.artist && (
-          <p className="text-xs text-gray-300">{song.artist}</p>
-        )}
-        {/* {song?.duration && (
-          <p className="text-xs text-gray-400 mt-1">{song.duration}</p>
-        )} */}
+        {song?.artist && <p className="text-xs text-gray-300">{song.artist}</p>}
       </div>
 
-      {/* Nút thêm vào playlist */}
+      {/* Nút thêm hoặc xóa */}
       {!isPlaylistPage ? (
         <button
           className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full z-10 w-8 h-8"
@@ -165,9 +169,7 @@ const SongItem = ({ song, onPlay, onRemoved }) => {
           <PlaylistAddIcon fontSize="small" />
         </button>
       ) : (
-        // Nút xóa bài hát khỏi playlist khi ở trang playlist và bài hát có trong playlist
-        songInPlaylists.length > 0 &&
-        isPlaylistPage && (
+        songInPlaylists.length > 0 && (
           <button
             className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full z-10 w-8 h-8"
             onClick={(e) => {
@@ -180,8 +182,8 @@ const SongItem = ({ song, onPlay, onRemoved }) => {
         )
       )}
 
-      {/* Modal xác nhận xóa bài hát khỏi playlist */}
-      {(showRemoveModal && isPlaylistPage) && (
+      {/* Modal xác nhận xóa */}
+      {showRemoveModal && isPlaylistPage && (
         <div
           className="absolute top-10 left-2 z-20 bg-black/90 text-white rounded-lg shadow-lg w-48 p-3"
           onClick={(e) => e.stopPropagation()}
@@ -217,7 +219,7 @@ const SongItem = ({ song, onPlay, onRemoved }) => {
         <div
           className="absolute top-10 left-2 z-20 bg-black/90 text-white rounded-lg shadow-lg w-48 p-3"
           onClick={(e) => e.stopPropagation()}
-          ref={popupRef} // Thêm ref vào popup
+          ref={popupRef}
         >
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold">Add to Playlist</span>
@@ -229,15 +231,17 @@ const SongItem = ({ song, onPlay, onRemoved }) => {
             </button>
           </div>
           <ul className="space-y-1 text-sm">
-            {userPlaylists.map((playlist) => (
-              <li
-                key={playlist.name}
-                className="hover:bg-gray-700 px-2 py-1 rounded cursor-pointer"
-                onClick={() => handleSelectPlaylist(playlist.name)}
-              >
-                {playlist.name}
-              </li>
-            ))}
+            {userPlaylists
+              .filter((playlist) => !playlist.songs.some((s) => s === song.id))
+              .map((playlist) => (
+                <li
+                  key={playlist.id}
+                  className="hover:bg-gray-700 px-2 py-1 rounded cursor-pointer"
+                  onClick={() => handleSelectPlaylist(playlist)}
+                >
+                  {playlist.name}
+                </li>
+              ))}
           </ul>
         </div>
       )}

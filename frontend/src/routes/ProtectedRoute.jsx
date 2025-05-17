@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import axios from "../utils/axiosConfig";
 import Sidebar from "../components/Sidebar";
@@ -6,6 +6,9 @@ import Player from "../components/Player";
 
 const ProtectedRoute = () => {
   const [isAuth, setIsAuth] = useState(null);
+
+  const [bgColor, setBgColor] = useState("#333333");
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -29,15 +32,18 @@ const ProtectedRoute = () => {
   if (isAuth === null) return null;
 
   return isAuth ? (
-   <>
-    <Sidebar />
-      <div className="w-screen h-screen bg-black flex items-center justify-center">
+    <>
+      <Sidebar />
+      <div
+        className="w-screen h-screen"
+        style={{ background: `linear-gradient(${bgColor}, #121212)` }}
+      >
         <div className="">
           <Outlet />
         </div>
       </div>
       <Player />
-   </>
+    </>
   ) : (
     <Navigate to="/login" replace />
   );

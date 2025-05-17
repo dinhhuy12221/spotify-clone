@@ -10,6 +10,7 @@ import PublicRoute from "../routes/PublicRoute";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import Sidebar from "../components/Sidebar";
 import Player from "../components/Player";
+import DisplayAlbum from "./DisplayAlbum";
 
 const Display = () => {
   return (
@@ -38,7 +39,8 @@ const Display = () => {
       </Route>
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/playlist/:name" element={<DisplayPlaylist />} />
+        <Route path="/playlist/:id" element={<DisplayPlaylist />} />
+        <Route path="/album/:id" element={<DisplayAlbum />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
     </Routes>

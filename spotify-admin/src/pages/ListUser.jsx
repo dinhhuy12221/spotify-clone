@@ -78,7 +78,7 @@ const ListUser = () => {
                 <div>
                   {item.playlists.map((playlist, index) => (
                     <p key={index}>
-                      <b>{playlist.name}</b>: {playlist.song_ids}
+                      <b>{playlist.name}</b>: {playlist.songs}
                     </p>
                   ))}
                 </div>

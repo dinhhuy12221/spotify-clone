@@ -143,9 +143,9 @@ const Playlist = () => {
         <ul>
           {playlists.map((playlist) => (
             <li
-              key={playlist.name}
+              key={playlist.id}
               className="flex justify-between items-center mb-2 cursor-pointer"
-              onClick={() => navigate(`/playlist/${encodeURIComponent(playlist.name)}`)}
+              onClick={() => navigate(`/playlist/${playlist.id}`)}
             >
               {selectedPlaylist === playlist ? (
                 <>

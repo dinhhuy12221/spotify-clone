@@ -1,6 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import AddSong from "./pages/AddSong";
 import AddAlbum from "./pages/AddAlbum";
 import ListSong from "./pages/ListSong";
@@ -15,7 +15,6 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 // Các route public (login, register…)
 import PublicRoute from "./routes/PublicRoute";
 
-export const url = "http://localhost:8000/api";
 
 const AdminLayout = () => (
   <div className="flex items-start min-h-screen">
@@ -35,6 +34,7 @@ const App = () => {
     <Routes>
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Navigate to="/list-user" replace />} />
       </Route>
 
       <Route element={<ProtectedRoute />}>

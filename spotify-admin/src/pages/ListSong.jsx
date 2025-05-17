@@ -82,7 +82,7 @@ const ListSong = () => {
               <p>{item.id}</p>
               <img
                 className="w-12 h-12 object-cover"
-                src={item.cover_image}
+                src={item?.cover_image}
                 alt="cover"
               />
               <p>{item.title}</p>

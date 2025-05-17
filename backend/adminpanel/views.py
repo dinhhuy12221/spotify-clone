@@ -101,12 +101,21 @@ class AdminUserView(APIView):
 # MEDIA API (Album / Song / MusicVideo)
 # —––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––—
 class AlbumViewSet(viewsets.ModelViewSet):
-    queryset = Album.objects.all().order_by('-created_at')
+    # queryset = Album.objects.all().order_by('-created_at')
+    queryset = Album.objects.all()
     serializer_class = AlbumSerializer
     permission_classes = [IsAdminUser]
+    
+    @action(detail=True, methods=['get'], url_path='songs')
+    def get_songs(self, request, pk=None):
+        album = self.get_object()
+        songs = Song.objects.filter(album=album)
+        serializer = SongSerializer(songs, many=True, context={'request': request})
+        return Response(serializer.data)
 
 class SongViewSet(viewsets.ModelViewSet):
-    queryset = Song.objects.all().order_by('-created_at')
+    # queryset = Song.objects.all().order_by('-created_at')
+    queryset = Song.objects.all()
     serializer_class = SongSerializer
     permission_classes = [IsAdminUser]
 
@@ -122,7 +131,8 @@ class SongViewSet(viewsets.ModelViewSet):
             raise Http404("File not found")
 
 class MusicVideoViewSet(viewsets.ModelViewSet):
-    queryset = MusicVideo.objects.all().order_by('-uploaded_at')
+    # queryset = MusicVideo.objects.all().order_by('-uploaded_at')
+    queryset = MusicVideo.objects.all()
     serializer_class = MusicVideoSerializer
     permission_classes = [IsAdminUser]
 

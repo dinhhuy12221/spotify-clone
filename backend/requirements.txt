@@ -12,6 +12,7 @@ httpcore==0.15.0
 httpx==0.23.0
 idna==3.10
 packaging==25.0
+pillow==11.2.1
 pipdeptree==2.26.1
 PyJWT==2.9.0
 python-decouple==3.8

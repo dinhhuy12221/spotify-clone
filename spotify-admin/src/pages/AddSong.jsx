@@ -12,9 +12,7 @@ const AddSong = () => {
   const [artist, setArtist] = useState("");
   const [album, setAlbum] = useState(null);
   const [albumData, setAlbumData] = useState([]);
-  const [audioFile, setAudioFile] = useState(null);
-  const [duration, setDuration] = useState("");
-  const [createdAt, setCreatedAt] = useState("");
+//   const [duration, setDuration] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Xử lý khi form được gửi
@@ -47,8 +45,7 @@ const AddSong = () => {
         setTitle("");
         setArtist("");
         setAlbumData("");
-        setAudioFile(null);
-        setDuration("");
+        // setAudioFile(null);
         setCoverImage(null);
         setSong(false);
       } else {
@@ -164,8 +161,8 @@ const AddSong = () => {
         >
           <option value="none">None</option>
           {albumData?.map((item, index) => (
-            <option key={index} value={item.id}>
-              {item.title}
+            <option key={index} value={item?.id}>
+              {item?.title}
             </option>
           ))}
         </select>

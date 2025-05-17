@@ -44,6 +44,7 @@ const AddSong = () => {
           setTitle("");
           setArtist("");
           setAlbumData("");
+          setAlbum("")
           // setAudioFile(null);
           setCoverImage(null);
           setSong(false);
@@ -77,7 +78,7 @@ const AddSong = () => {
   // Tự động tải dữ liệu album khi component được mount
   useEffect(() => {
     loadAlbumData();
-  }, []);
+  }, [album]);
 
   // Hiển thị giao diện khi đang tải
   return loading ? (

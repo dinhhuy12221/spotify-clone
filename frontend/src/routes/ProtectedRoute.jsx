@@ -16,7 +16,7 @@ const ProtectedRoute = () => {
       }
 
       try {
-        await axios.get("/admin/test-auth/");
+        await axios.get("/accounts/test-auth/");
         setIsAuth(true);
       } catch (error) {
         setIsAuth(false);
@@ -32,7 +32,7 @@ const ProtectedRoute = () => {
    <>
     <Sidebar />
       <div className="w-screen h-screen bg-black flex items-center justify-center">
-        <div className="w-full max-w-md">
+        <div className="">
           <Outlet />
         </div>
       </div>

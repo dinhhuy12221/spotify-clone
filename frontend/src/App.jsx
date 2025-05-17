@@ -6,7 +6,7 @@ import PlayerContextProvider from "./context/PlayerContext";
 const App = () => (
   <PlayerContextProvider>
     <div className="h-screen bg-black">
-      <div className="h-[100%] flex">
+      <div className="flex">
         <Display />
       </div>
     </div>

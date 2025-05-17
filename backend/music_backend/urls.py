@@ -7,5 +7,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
     path('api/admin/', include('adminpanel.urls')),
-    path('api/song/', include('song.urls')),
+    path('api/', include('song.urls')),
+    path('api/', include('album.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -15,16 +15,14 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await axios.post("/accounts/login/", formData);
-
-      // axios không có response.ok, nên không check như fetch
-      // nếu lỗi sẽ bị ném ở catch
-
-      const data = res.data;
+      console.log(res);
+      
+      const data = res.data.tokens;
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
 
       // Chuyển đến dashboard hoặc trang admin
-      window.location.href = "/";
+      navigate('/')
     } catch (err) {
       // err.response.data.detail có thể có message lỗi
       setError("Đăng nhập thất bại");

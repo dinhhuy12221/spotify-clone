@@ -1,9 +1,16 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from rest_framework.routers import DefaultRouter
+from .views import PlaylistViewSet
 from .views import (
     RegisterView, LoginView, LogoutView,
     TestAuthView, MyTokenRefreshView
 )
+# urls.py
+
+router = DefaultRouter()
+router.register(r'playlists', PlaylistViewSet, basename='playlist')
+
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
@@ -11,19 +18,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='auth_logout'),
     path('test-auth/', TestAuthView.as_view(), name='test_auth'),
     path('user_info/', views.UserInfoView.as_view(), name='user_info'),
-    path('user-playlist/', views.UserPlaylistView.as_view(), name='user_playlist'),
-    path('playlist/create/', views.CreatePlaylistView.as_view(), name='create-playlist'),
-    path('playlist/delete/<str:name>/', views.DeletePlaylistView.as_view(), name='delete-playlist'),
-    path('playlist/rename/', views.RenamePlaylistView.as_view(), name='rename-playlist'),
-    path('playlist/update-songs/', views.UpdatePlaylistSongsView.as_view(), name='update-playlist-songs'),
+    path('', include(router.urls)),
+
 ]
 
-
-
-# from django.urls import path
-# from . import views
-
-# urlpatterns = [
-#     path('register/', views.RegisterView.as_view(), name='register'),
-#     path('login/', views.LoginView.as_view(), name='login'),
-# ]

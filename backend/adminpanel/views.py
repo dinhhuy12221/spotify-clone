@@ -7,7 +7,7 @@ from django.http import FileResponse, Http404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated, BasePermission
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -35,13 +35,16 @@ class AdminTokenSerializer(TokenObtainPairSerializer):
 class AdminTokenView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = AdminTokenSerializer
+    
+class IsStaffUser(BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_staff)
 
 class TestAuthView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaffUser]
 
     def get(self, request):
-        return Response({'message': 'Token is valid'}, status=status.HTTP_200_OK)
-
+        return Response({'message': 'Staff token is valid'}, status=status.HTTP_200_OK)
 
 # —––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––—
 # USER MANAGEMENT (API cho React “admin”)
@@ -59,9 +62,15 @@ class AdminUserView(APIView):
                 'id': u.id,
                 'username': u.username,
                 'email': u.email,
-                'playlists': u.playlists,
-                'isAdmin': u.is_staff,
+                'playlists': [
+                    {
+                        'id': p.id,
+                        'name': p.name,
+                        'songs': p.songs,
+                    } for p in u.playlists.all()
+                ],
             }
+
             return Response(data)
 
         users = User.objects.filter(is_staff=False)
@@ -70,10 +79,16 @@ class AdminUserView(APIView):
                 'id': u.id,
                 'username': u.username,
                 'email': u.email,
-                'playlists': u.playlists,
-            }
-            for u in users
+                'playlists': [
+                    {
+                        'id': p.id,
+                        'name': p.name,
+                        'songs': p.songs,
+                    } for p in u.playlists.all()
+                ],
+            } for u in users
         ]
+
         return Response(data)
 
     def put(self, request, user_id):

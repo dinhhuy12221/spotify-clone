@@ -3,14 +3,6 @@ import React, { useEffect, useState } from "react";
 const Profile = () => {
   const [user, setUser] = useState(null);
 
-  // Load user info từ localStorage
-  useEffect(() => {
-    const userInfo = localStorage.getItem("user_info");
-    if (userInfo) {
-      setUser(JSON.parse(userInfo));
-    }
-  }, []);
-
   if (!user) {
     return (
       <div className="text-white text-center mt-10 text-lg">

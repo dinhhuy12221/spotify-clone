@@ -34,16 +34,16 @@ const Player = () => {
 
   return (
     <div className="w-full fixed bottom-0 left-0">
-      <div className="bg-black flex justify-between items-center text-white px-4">
+      <div className="bg-black flex justify-between items-center text-white p-2">
         <div className="hidden lg:flex items-center gap-4">
           <img
             className="w-12"
-            src={track?.thumbnail || track?.image}
+            src={track?.cover_image || track?.image}
             alt="Track cover"
           />
           <div>
             <p>{track?.title || track?.name}</p>
-            {track?.artist && <p>{track?.artist}</p>}
+            <p>Artist: {track?.artist}</p>
           </div>
         </div>
 

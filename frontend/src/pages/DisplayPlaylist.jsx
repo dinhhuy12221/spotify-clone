@@ -70,7 +70,6 @@ const DisplayPlaylist = () => {
 
   return (
     <>
-      <Navbar />
       <div className="p-4 text-white">
         <button
           onClick={() => navigate("/")}

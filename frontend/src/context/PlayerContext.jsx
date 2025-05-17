@@ -189,7 +189,9 @@ const PlayerContextProvider = ({ children }) => {
 
   const playWithId = (song, list = null) => {
     const listToUse = list || trackList;
-    const idx = listToUse.findIndex(s => s.link === song.link);
+    
+    const idx = listToUse.findIndex(s => s.id === song.id);
+    
     if (idx !== -1) {
       setTrackList(listToUse);
       setCurrentIndex(idx);
@@ -236,7 +238,7 @@ const PlayerContextProvider = ({ children }) => {
       {children}
       <ReactPlayer
         ref={playerRef}
-        url={track?.url}
+        url={track?.audio_file}
         playing={playStatus}
         loop={loop}
         width={0}

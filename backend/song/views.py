@@ -6,7 +6,8 @@ from .models import Song
 from .serializers import SongSerializer
 
 class SongReadOnlyViewSet(ReadOnlyModelViewSet):
-    queryset = Song.objects.all().order_by('-created_at')
+    # queryset = Song.objects.all().order_by('-created_at')
+    queryset = Song.objects.all()
     serializer_class = SongSerializer
     permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter]

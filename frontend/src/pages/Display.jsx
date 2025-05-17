@@ -21,9 +21,7 @@ const Display = () => {
           path="/"
           element={
             <>
-              <Sidebar />
               <DisplayHome />
-              <Player />
             </>
           }
         />
@@ -48,35 +46,3 @@ const Display = () => {
 };
 
 export default Display;
-
-// import React, { useEffect, useRef, useState } from 'react'
-// import { Route, Routes, useLocation, useParams } from 'react-router-dom'
-// import DisplayHome from './DisplayHome'
-// import Login from './Login'
-// import Register from './Register'
-// import DisplayPlaylist from './DisplayPlaylist'
-
-// const Display = () => {
-//   const displayRef = useRef()
-//   const location = useLocation()
-//   const [bgColor, setBgColor] = useState('#333333') // Mặc định
-//   const isAlbum = location.pathname.includes('album')
-//   const albumId = isAlbum ? location.pathname.split('/').pop() : ''
-
-//   useEffect(() => {
-//     displayRef.current.style.background = `linear-gradient(${bgColor}, #121212)`
-//   }, [bgColor])
-
-//   return (
-//     <div ref={displayRef} className='w-[100%] m-2 px-6 pt-4 rounded bg-[#121212] text-white overflow-auto lg:w-[75%] lg:ml-0'>
-//       <Routes>
-//         <Route path='/' element={<DisplayHome />} />
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/register" element={<Register />} />
-//         <Route path='/playlist/:name' element={<DisplayPlaylist />} />
-//       </Routes>
-//     </div>
-//   )
-// }
-
-// export default Display

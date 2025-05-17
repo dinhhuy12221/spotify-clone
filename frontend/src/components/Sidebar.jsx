@@ -26,7 +26,7 @@ const Sidebar = () => {
     <div className="w-[25%] p-2 flex-col gap-2 text-white hidden lg:flex">
       <div className="bg-[#121212] h-[20%] rounded flex flex-col justify-around p-4 gap-3">
         <div
-          className="flex items-center gap-3 cursor-pointer"
+          className="flex items-center gap-3 cursor-pointer  z-20"
           onClick={() => navigate("/")}
         >
           <img className="w-6" src={assets.home_icon} alt="home" />

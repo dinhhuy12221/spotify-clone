@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
-
+import { jwtDecode } from "jwt-decode";
+import user_icon from "../assets/user_icon.png";
 const Navbar = () => {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -43,10 +43,15 @@ const Navbar = () => {
           <>
             <button
               onClick={() => setDropdownOpen((prev) => !prev)}
-              className="bg-purple-500 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold"
+              className="w-10 h-10 rounded-full overflow-hidden  bg-purple-500 hover:bg-purple-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-300"
             >
-              {username?.charAt(0)?.toUpperCase() || "U"}
+              <img
+                src={user_icon}
+                alt="User Avatar"
+                className="w-full h-full object-cover"
+              />
             </button>
+
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-32 bg-white rounded shadow-lg z-10 text-sm text-black">
                 <button
@@ -81,8 +86,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
 
 // import { useEffect, useRef, useState } from "react";
 // import { useNavigate } from "react-router-dom";
@@ -160,8 +163,6 @@ export default Navbar;
 // };
 
 // export default Navbar;
-
-
 
 // import React, { useEffect, useRef, useState } from "react";
 // import { assets } from "../assets/assets";
@@ -258,7 +259,6 @@ export default Navbar;
 // };
 
 // export default Navbar;
-
 
 // import React from 'react'
 // import { assets } from '../assets/assets'

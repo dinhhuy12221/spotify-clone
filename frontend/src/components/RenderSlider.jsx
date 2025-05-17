@@ -10,6 +10,7 @@ const RenderSlider = ({
   setPage,
   allItems,
   type = "song",
+  fetchSongs,
   itemsPerPage = 6,
 }) => {
   const { playWithId } = useContext(PlayerContext);
@@ -29,6 +30,7 @@ const RenderSlider = ({
       onPlay={(item) => playWithId(item, allItems)}
       onPrevPage={() => setPage(Math.max(0, currentPage - 1))}
       onNextPage={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
+      fetchSongs={() => fetchSongs()}
     />
   );
 };

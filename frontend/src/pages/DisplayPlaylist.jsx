@@ -3,13 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { PlayerContext } from "../context/PlayerContext";
 import axios from "../utils/axiosConfig";
 import SliderSection from "../components/SliderSection";
+import RenderSlider from "../components/RenderSlider";
 
 const DisplayPlaylist = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [songs, setSongs] = useState([]);
+  const [songsPage, setSongsPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const { playWithId } = useContext(PlayerContext);
 
   const fetchSongs = async () => {
     setLoading(true);
@@ -63,10 +64,14 @@ const DisplayPlaylist = () => {
       </button>
       <h2 className="text-2xl font-bold mb-4">Playlist: {id}</h2>
       {songs.length > 0 ? (
-        <SliderSection
-          title=""
+        <RenderSlider
+          title="Songs"
           items={songs}
-          onClickSong={(song) => playWithId(song, songs)}
+          currentPage={songsPage}
+          setPage={setSongsPage}
+          allItems={songs}
+          type="song"
+          fetchSongs={fetchSongs}
         />
       ) : (
         <p>Playlist hiện chưa có bài hát nào.</p>

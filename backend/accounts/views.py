@@ -75,13 +75,11 @@ class UserInfoView(APIView):
 
     def get(self, request):
         user = request.user
-        playlists = user.user_playlists.all()  # Lấy từ related_name trong model Playlist
-        playlists_data = PlaylistSerializer(playlists, many=True).data
+        # playlists = user.user_playlists.all()  # Lấy từ related_name trong model Playlist
 
         user_info = {
             'username': user.username,
             'email': user.email,
-            'playlists': playlists_data,
         }
         return Response(user_info)
 
